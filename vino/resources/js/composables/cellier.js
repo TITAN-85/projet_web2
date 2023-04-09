@@ -1,5 +1,5 @@
 import { ref, inject } from 'vue';
-import { useRouter} from 'vue-router'
+import { useRouter } from 'vue-router'
 import { onMounted } from "vue";
 import useAuth from "../composables/auth";
 
@@ -11,7 +11,7 @@ export default function useCellier() {
     const showCellier = ref({});
     const router = useRouter();
     const { user } = useAuth();
-    const validationErrors = ref ({});
+    const validationErrors = ref({});
     const isLoading = ref(false);
     const swal = inject('$swal');
     const axios = require('axios');
@@ -24,22 +24,19 @@ export default function useCellier() {
      */
     const getCelliers = async () => {
         axios.get('api/cellier')
-        .then(response=>{
-            mesCellier.value = response.data.data;
-            mesCellier = mesCellier.value;
-        })
-    } 
-    
+            .then(response => {
+                mesCellier.value = response.data.data;
+                mesCellier = mesCellier.value;
+            })
+    }
+
     const showOneCellier = async (id) => {
-        console.log(id)
-        try{
-            const response = await axios.get('api/cellier/' + id )
+        try {
+            const response = await axios.get('api/cellier-modifier/' + id)
             showCellier.value = response.data.data;
-            console.log('un cellier');
-            console.log(showCellier);
             return showCellier.value;
         }
-        catch (error){
+        catch (error) {
             console.error('Error fetching one cellier', error);
         }
     }
@@ -50,40 +47,35 @@ export default function useCellier() {
      * @returns {Array} oneCellier
      */
     const getOneCellier = async (id) => {
-        try{
-            const response = await axios.get('api/cellier/' + id )
+        try {
+            const response = await axios.get('api/cellier/' + id)
             oneCellier.value = response.data.data;
             return oneCellier.value;
         }
-        catch (error){
+        catch (error) {
             console.error('Error fetching one cellier', error);
         }
-    } 
+    }
 
+    /**
+     * Trier un Cellie de usager
+     * @param {object} cellier 
+     * @returns 
+     */
     const trierMonCellier = async (itemName, trier, id) => {
 
         const response = await axios.get('api/bouteille/' + id);
-        const showOneCellier = async (id) => {
-
-            try{
-                const response = await axios.get('api/cellier-modifier/' + id )
-                showCellier.value = response.data.data;
-                return showCellier.value;
-            }
-            catch (error){
-                console.error('Error fetching one cellier', error);
-            }
 
         let cellierTrier = [];
         response.data.data.forEach(bouteille => {
-          if (bouteille.pays == itemName) {
-            cellierTrier.push(bouteille);
-          }
+            if (bouteille.pays == itemName) {
+                cellierTrier.push(bouteille);
+            }
         });
-        
+
         return cellierTrier;
-        
-      };
+
+    };
 
 
 
@@ -92,26 +84,26 @@ export default function useCellier() {
      * @param {object} cellier 
      * @returns 
      */
-    const storeCellier = async (cellier) => { 
+    const storeCellier = async (cellier) => {
         if (isLoading.value) return;
 
         isLoading.value = true
         validationErrors.value = {}
 
         axios.post('/api/cellier', cellier)
-        .then(response => {
-            router.push({name: 'cellier.index'})
-            swal({
-                    icon : 'success',
+            .then(response => {
+                router.push({ name: 'cellier.index' })
+                swal({
+                    icon: 'success',
                     title: 'Cellier Ajouté Avec Succès'
                 })
-        })
-        .catch(error =>{
-            if(error.response?.data){
-                validationErrors.value = error.response.data.errors
-            }
-        })
-        .finally(() => isLoading.value = false)
+            })
+            .catch(error => {
+                if (error.response?.data) {
+                    validationErrors.value = error.response.data.errors
+                }
+            })
+            .finally(() => isLoading.value = false)
     }
 
     /**
@@ -119,7 +111,7 @@ export default function useCellier() {
      * @param {object} cellier
      * @returns 
      */
-    const updateCellier = async (cellier) => { 
+    const updateCellier = async (cellier) => {
         if (isLoading.value) return;
 
         isLoading.value = true
@@ -127,19 +119,19 @@ export default function useCellier() {
         console.log('updateCellier / cellier');
 
         axios.put('/api/cellier/' + cellier.id, cellier)
-        .then(response => {
-            router.push({name: 'cellier.index'})
-            swal({
+            .then(response => {
+                router.push({ name: 'cellier.index' })
+                swal({
                     icon: 'success',
-                    title : 'Modification de votre cellier a ete effecté Avec Succès'
+                    title: 'Modification de votre cellier a ete effecté Avec Succès'
                 })
-        })
-        .catch(error =>{
-            if(error.response?.data){
-                validationErrors.value = error.response.data.errors
-            }
-        })
-        .finally(() => isLoading.value = false)
+            })
+            .catch(error => {
+                if (error.response?.data) {
+                    validationErrors.value = error.response.data.errors
+                }
+            })
+            .finally(() => isLoading.value = false)
     }
 
 
@@ -147,7 +139,7 @@ export default function useCellier() {
      * Efface un Cellie de usager
      * @param {id} id 
      */
-    const deleteCellier = async (id) => { 
+    const deleteCellier = async (id) => {
         swal({
             title: 'Êtes-vous sûr(e) ?',
             text: 'Vous ne pourrez pas annuler cette action !',
@@ -159,25 +151,25 @@ export default function useCellier() {
             timerProgressBar: true,
             reverseButtons: true
         })
-        .then(result =>{
-            if (result.isConfirmed){
-                axios.delete('/api/cellier/' + id)
-                .then(response => {
-                    getCelliers()
-                    router.push({name: 'cellier.index'})
-                    swal({
-                            icon: 'success',
-                            title : 'Suppression effectuée avec succès'
+            .then(result => {
+                if (result.isConfirmed) {
+                    axios.delete('/api/cellier/' + id)
+                        .then(response => {
+                            getCelliers()
+                            router.push({ name: 'cellier.index' })
+                            swal({
+                                icon: 'success',
+                                title: 'Suppression effectuée avec succès'
+                            })
                         })
-                })
-                .catch(error =>{
-                    swal({
-                        icon: 'error',
-                        title : 'Une erreur est survenue'
-                    })
-                })
-            }
-        })
+                        .catch(error => {
+                            swal({
+                                icon: 'error',
+                                title: 'Une erreur est survenue'
+                            })
+                        })
+                }
+            })
     }
 
 
@@ -193,7 +185,7 @@ export default function useCellier() {
         storeCellier,
         updateCellier,
         deleteCellier,
-        showOneCellier, 
+        showOneCellier,
         trierMonCellier
     }
 }

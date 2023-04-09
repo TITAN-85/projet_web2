@@ -152,7 +152,7 @@
     background-color: rgb(214, 214, 214);
     justify-content: space-around;
     border-radius: 15px;
-    width: 200px;
+    width: 150px;
     height: 40px;
   }
 
@@ -202,6 +202,8 @@
 
   .stars-btn {
     padding: 2px;
+    margin-left: 10px;
+    margin-right: 10px;
   }
   /* ======================================== */
   .stars-btn {
@@ -263,7 +265,7 @@
     }
 
     fieldset label {
-      font-size: 1.5rem;
+      font-size: 2rem;
     }
 
   }
